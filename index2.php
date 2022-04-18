@@ -56,7 +56,7 @@ if (!empty($_GET["action"])) {
 		<div class="txt-heading">Shopping Cart</div>
 		<a id="btnEmpty" href="index2.php?action=empty">Empty Cart</a>
 		<a id="btnEmpty3" href="index2.php?action=empty"></a>
-		<a id="btnEmpty2" href="index.php?action=empty">Home</a>
+		<a id="btnEmpty2" href="index4.php?action=empty">Home</a>
 		<a id="btnEmpty3" href="index2.php?action=empty"></a>
 		<a id="btnEmpty2" href="tambah.php?action=empty">Beli Sekarang</a>
 		<?php
