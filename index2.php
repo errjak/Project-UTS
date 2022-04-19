@@ -1,49 +1,56 @@
 <?php
-session_start();
-require_once("function.php");
+// session_start();
+// require_once("function.php");
 
-$db_handle = new DBController();
-if (!empty($_GET["action"])) {
-	switch ($_GET["action"]) {
-		case "add":
-			if (!empty($_POST["quantity"])) {
-				$productByCode = $db_handle->runQuery("SELECT * FROM tblproduct WHERE code='" . $_GET["code"] . "'");
-				$itemArray = array($productByCode[0]["code"] => array('name' => $productByCode[0]["name"], 'code' => $productByCode[0]["code"], 'quantity' => $_POST["quantity"], 'price' => $productByCode[0]["price"], 'image' => $productByCode[0]["image"]));
+// $db_handle = new DBController();
+// if (!empty($_GET["action"])) {
+// 	switch ($_GET["action"]) {
+// 		case "add":
+// 			if (!empty($_POST["quantity"])) {
+// 				$productByCode = $db_handle->runQuery("SELECT * FROM tblproduct WHERE code='" . $_GET["code"] . "'");
+// 				$itemArray = array($productByCode[0]["code"] => array('name' => $productByCode[0]["name"], 'code' => $productByCode[0]["code"], 'quantity' => $_POST["quantity"], 'price' => $productByCode[0]["price"], 'image' => $productByCode[0]["image"]));
 
-				if (!empty($_SESSION["cart_item"])) {
-					if (in_array($productByCode[0]["code"], array_keys($_SESSION["cart_item"]))) {
-						foreach ($_SESSION["cart_item"] as $k => $v) {
-							if ($productByCode[0]["code"] == $k) {
-								if (empty($_SESSION["cart_item"][$k]["quantity"])) {
-									$_SESSION["cart_item"][$k]["quantity"] = 0;
-								}
-								$_SESSION["cart_item"][$k]["quantity"] += $_POST["quantity"];
-							}
-						}
-					} else {
-						$_SESSION["cart_item"] = array_merge($_SESSION["cart_item"], $itemArray);
-					}
-				} else {
-					$_SESSION["cart_item"] = $itemArray;
-				}
-			}
-			break;
-		case "remove":
-			if (!empty($_SESSION["cart_item"])) {
-				foreach ($_SESSION["cart_item"] as $k => $v) {
-					if ($_GET["code"] == $k)
-						unset($_SESSION["cart_item"][$k]);
-					if (empty($_SESSION["cart_item"]))
-						unset($_SESSION["cart_item"]);
-				}
-			}
-			break;
-		case "empty":
-			unset($_SESSION["cart_item"]);
-			break;
-	}
+// 				if (!empty($_SESSION["cart_item"])) {
+// 					if (in_array($productByCode[0]["code"], array_keys($_SESSION["cart_item"]))) {
+// 						foreach ($_SESSION["cart_item"] as $k => $v) {
+// 							if ($productByCode[0]["code"] == $k) {
+// 								if (empty($_SESSION["cart_item"][$k]["quantity"])) {
+// 									$_SESSION["cart_item"][$k]["quantity"] = 0;
+// 								}
+// 								$_SESSION["cart_item"][$k]["quantity"] += $_POST["quantity"];
+// 							}
+// 						}
+// 					} else {
+// 						$_SESSION["cart_item"] = array_merge($_SESSION["cart_item"], $itemArray);
+// 					}
+// 				} else {
+// 					$_SESSION["cart_item"] = $itemArray;
+// 				}
+// 			}
+// 			break;
+// 		case "remove":
+// 			if (!empty($_SESSION["cart_item"])) {
+// 				foreach ($_SESSION["cart_item"] as $k => $v) {
+// 					if ($_GET["code"] == $k)
+// 						unset($_SESSION["cart_item"][$k]);
+// 					if (empty($_SESSION["cart_item"]))
+// 						unset($_SESSION["cart_item"]);
+// 				}
+// 			}
+// 			break;
+// 		case "empty":
+// 			unset($_SESSION["cart_item"]);
+// 			break;
+// 	}
+// }
+$conn = mysqli_connect("localhost", "root", "", "tblproduct");
+$result = [];
+$resultset = mysqli_query($conn, "SELECT * FROM addproduct");
+while ($res = mysqli_fetch_assoc($resultset)) {
+	$result[] = $res;
 }
 ?>
+
 <HTML>
 
 <HEAD>
@@ -54,85 +61,61 @@ if (!empty($_GET["action"])) {
 <BODY>
 	<div id="shopping-cart">
 		<div class="txt-heading">Shopping Cart</div>
-		<a id="btnEmpty" href="index2.php?action=empty">Empty Cart</a>
-		<a id="btnEmpty3" href="index2.php?action=empty"></a>
-		<a id="btnEmpty2" href="index4.php?action=empty">Home</a>
+		<a id="btnEmpty2" href="index3.php?action=empty">Home</a>
 		<a id="btnEmpty3" href="index2.php?action=empty"></a>
 		<a id="btnEmpty2" href="tambah.php?action=empty">Beli Sekarang</a>
-		<?php
-		if (isset($_SESSION["cart_item"])) {
-			$total_quantity = 0;
-			$total_price = 0;
-		?>
-			<table class="tbl-cart" cellpadding="10" cellspacing="1">
-				<tbody>
+		<table class="tbl-cart" cellpadding="10" cellspacing="1">
+			<tbody>
+				<tr>
+					<th style="text-align:left;">Name</th>
+					<th style="text-align:left;">Code</th>
+					<th style="text-align:center;" width="5%">Quantity</th>
+					<th style="text-align:center;" width="10%">Unit Price</th>
+					<th style="text-align:center;" width="10%">Action</th>
+				</tr>
+				<?php
+				foreach ($result as $res2) :
+				?>
 					<tr>
-						<th style="text-align:left;">Name</th>
-						<th style="text-align:left;">Code</th>
-						<th style="text-align:right;" width="5%">Quantity</th>
-						<th style="text-align:right;" width="10%">Unit Price</th>
-						<th style="text-align:right;" width="10%">Price</th>
-						<th style="text-align:center;" width="5%">Remove</th>
+						<td><?php
+							echo $res2["name_product"];
+							?>
+						</td>
+						<td>
+							<span class="block-email">
+								<?php
+								echo $res2["code_product"];
+								?>
+							</span>
+						</td>
+						<td style="text-align:center" class="desc"><?php
+																	echo $res2["quantity"];
+																	?></td>
+						<td style="text-align: center;"><?php
+														echo $res2["unit_price"];
+														?>
+						</td>
+						<td style="text-align: center;">
+							<div>
+								<button data-toggle="tooltip" data-placement="top" title="Edit">
+									<a href="edit.php?id=<?php echo $res2["id_product"]; ?>"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-brush" viewBox="0 0 16 16">
+											<path d="M15.825.12a.5.5 0 0 1 .132.584c-1.53 3.43-4.743 8.17-7.095 10.64a6.067 6.067 0 0 1-2.373 1.534c-.018.227-.06.538-.16.868-.201.659-.667 1.479-1.708 1.74a8.118 8.118 0 0 1-3.078.132 3.659 3.659 0 0 1-.562-.135 1.382 1.382 0 0 1-.466-.247.714.714 0 0 1-.204-.288.622.622 0 0 1 .004-.443c.095-.245.316-.38.461-.452.394-.197.625-.453.867-.826.095-.144.184-.297.287-.472l.117-.198c.151-.255.326-.54.546-.848.528-.739 1.201-.925 1.746-.896.126.007.243.025.348.048.062-.172.142-.38.238-.608.261-.619.658-1.419 1.187-2.069 2.176-2.67 6.18-6.206 9.117-8.104a.5.5 0 0 1 .596.04zM4.705 11.912a1.23 1.23 0 0 0-.419-.1c-.246-.013-.573.05-.879.479-.197.275-.355.532-.5.777l-.105.177c-.106.181-.213.362-.32.528a3.39 3.39 0 0 1-.76.861c.69.112 1.736.111 2.657-.12.559-.139.843-.569.993-1.06a3.122 3.122 0 0 0 .126-.75l-.793-.792zm1.44.026c.12-.04.277-.1.458-.183a5.068 5.068 0 0 0 1.535-1.1c1.9-1.996 4.412-5.57 6.052-8.631-2.59 1.927-5.566 4.66-7.302 6.792-.442.543-.795 1.243-1.042 1.826-.121.288-.214.54-.275.72v.001l.575.575zm-4.973 3.04.007-.005a.031.031 0 0 1-.007.004zm3.582-3.043.002.001h-.002z" />
+										</svg></a>
+								</button>
+								<button data-toggle="tooltip" data-placement="top" title="Delete">
+									<a href="delete.php?id=<?php echo $res2["id_product"]; ?>"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash" viewBox="0 0 16 16">
+											<path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z" />
+											<path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z" />
+										</svg></a>
+								</button>
+							</div>
+						</td>
 					</tr>
-					<?php
-					foreach ($_SESSION["cart_item"] as $item) {
-						$item_price = $item["quantity"] * $item["price"];
-					?>
-						<tr>
-							<td><img src="<?php echo $item["image"]; ?>" class="cart-item-image" /><?php echo $item["name"]; ?></td>
-							<td><?php echo $item["code"]; ?></td>
-							<td style="text-align:right;"><?php echo $item["quantity"]; ?></td>
-							<td style="text-align:right;"><?php echo "$ " . $item["price"]; ?></td>
-							<td style="text-align:right;"><?php echo "$ " . number_format($item_price, 2); ?></td>
-							<td style="text-align:center;"><a href="index2.php?action=remove&code=<?php echo $item["code"]; ?>" class="btnRemoveAction"><img src="images/icon-delete.png" alt="Remove Item" /></a></td>
-						</tr>
-					<?php
-						$total_quantity += $item["quantity"];
-						$total_price += ($item["price"] * $item["quantity"]);
-					}
-					?>
-
-					<tr>
-						<td colspan="2" align="right">Total:</td>
-						<td align="right"><?php echo $total_quantity; ?></td>
-						<td align="right" colspan="2"><strong><?php echo "$ " . number_format($total_price, 2); ?></strong></td>
-						<td></td>
-
-
-					</tr>
-				</tbody>
-			</table>
-		<?php
-		} else {
-		?>
-			<div class="no-records">Your Cart is Empty</div>
-		<?php
-		}
-		?>
-	</div>
-
-	<div id="product-grid">
-		<div class="txt-heading">Products</div>
-		<?php
-		$product_array = $db_handle->runQuery("SELECT * FROM tblproduct ORDER BY id ASC");
-		if (!empty($product_array)) {
-			foreach ($product_array as $key => $value) {
-		?>
-				<div class="product-item">
-					<form method="post" action="index2.php?action=add&code=<?php echo $product_array[$key]["code"]; ?>">
-						<div class="product-image"><img src="<?php echo $product_array[$key]["image"]; ?>"></div>
-						<div class="product-tile-footer">
-							<div class="product-title"><?php echo $product_array[$key]["name"]; ?></div>
-							<div class="product-price"><?php echo "$" . $product_array[$key]["price"]; ?></div>
-							<div class="cart-action"><input type="text" class="product-quantity" name="quantity" value="1" size="2" /><input type="submit" value="Add to Cart" class="btnAddAction" /></div>
-						</div>
-					</form>
-				</div>
-		<?php
-			}
-		}
-		?>
-	</div>
+				<?php
+				endforeach;
+				?>
+			</tbody>
+		</table>
 </BODY>
 
 </HTML>

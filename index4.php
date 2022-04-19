@@ -68,7 +68,7 @@ while ($res = mysqli_fetch_assoc($resultset)) {
                 <li><a href="#team-section" class="nav-link">Catalog</a></li>
                 <li><a href="#services-section" class="nav-link"></a></li>
                 <li><a href="#blog-section" class="nav-link">Contact Us</a></li>
-                <li><a href="login.php" class="nav-link">Login</a></li>
+                <li><a href="index.php" class="nav-link">Login</a></li>
                 <!-- <li><a href="" class="nav-link">Register</a></li> -->
               </ul>
             </nav>

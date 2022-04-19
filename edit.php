@@ -1,20 +1,27 @@
 <?php
 $conn = mysqli_connect("localhost", "root", "", "tblproduct");
+
+$id = $_GET["id"];
+$resultset = mysqli_query($conn, "SELECT * FROM addproduct where id_product = $id");
+$res = mysqli_fetch_assoc($resultset);
+$result = $res;
+
 if (isset($_POST["submit"])) {
     $name_product = $_POST["name_product"];
     $code_product = $_POST["code_product"];
     $quantity = $_POST["quantity"];
     $unit_price = $_POST["unit_price"];
-    $insert = mysqli_query($conn, "INSERT INTO addproduct values('', '$name_product', '$code_product', '$quantity', '$unit_price')");
+    $insert = mysqli_query($conn, "UPDATE addproduct SET name_product='$name_product', code_product='$code_product', quantity='$quantity',unit_price='$unit_price' where id_product=$id");
     $hasil = mysqli_affected_rows($conn);
     if ($hasil > 0) {
         echo header('Location:index2.php');
     } else {
         echo "<script>
-    alert('Mohon maaf, Data belum bisa ditambahkan');
-</script>";
+                alert('Mohon maaf, Data anda belum berhasil dirubah');
+        </script>";
     }
 }
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -59,7 +66,7 @@ if (isset($_POST["submit"])) {
     <main id="main" class="main">
 
         <div class="pagetitle">
-            <h1>Menambahkan Data Baru</h1>
+            <h1>Update Data Baru</h1>
             <nav>
                 <ol class="breadcrumb">
                     <li class="breadcrumb-item"><a href="index3.php">Home</a></li>
@@ -77,10 +84,11 @@ if (isset($_POST["submit"])) {
 
                             <!-- General Form Elements -->
                             <form method="post" action="">
+                                <input type="hidden" value="<?php echo $result['id_product']; ?>">
                                 <div class="row mb-3">
                                     <label for="inputText" class="col-sm-2 col-form-label">Name</label>
                                     <div class="col-sm-10">
-                                        <select class="form-select" name="name_product" value="<?php echo $data["name_product"]; ?>" required>
+                                        <select class="form-select" name="name_product" value="<?php echo $result["name_product"]; ?>" required>
                                             <option selected>Pilih Produk</option>
                                             <option value="HyperX Gaming Mouse">HyperX Gaming Mouse</option>
                                             <option value="Razer Gaming Mouse">Razer Gaming Mouse</option>
@@ -92,7 +100,7 @@ if (isset($_POST["submit"])) {
                                 <div class="row mb-3">
                                     <label for="inputEmail" class="col-sm-2 col-form-label">Code</label>
                                     <div class="col-sm-10">
-                                        <select class="form-select" name="code_product" value="<?php echo $data["code_product"]; ?>" required>
+                                        <select class="form-select" name="code_product" value="<?php echo $result["code_product"]; ?>" required>
                                             <option selected>Pilih Code</option>
                                             <option value="HGM1201">HGM1201</option>
                                             <option value="RGM1202">RGM1202</option>
@@ -104,13 +112,13 @@ if (isset($_POST["submit"])) {
                                 <div class="row mb-3">
                                     <label for="inputPassword" class="col-sm-2 col-form-label">Quantity</label>
                                     <div class="col-sm-10">
-                                        <input type="text" class="form-control" name="quantity" placeholder="Masukkan Quantity" required />
+                                        <input type="text" class="form-control" name="quantity" placeholder="Masukkan Quantity" value="<?php echo $result['quantity']; ?>" required />
                                     </div>
                                 </div>
                                 <div class="row mb-3">
                                     <label for="inputNumber" class="col-sm-2 col-form-label">Unit Price</label>
                                     <div class="col-sm-10">
-                                        <select class="form-select" name="unit_price" value="<?php echo $data["unit_price"]; ?>" required>
+                                        <select class="form-select" name="unit_price" value="<?php echo $resullt["unit_price"]; ?>" required>
                                             <option selected>Pilih Harga</option>
                                             <option value="$849.00">$849.00</option>
                                             <option value="$745.00">$745.00</option>
